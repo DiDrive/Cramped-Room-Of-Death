@@ -26,5 +26,23 @@ export enum ENTITY_STATE_ENUM{
 }
 
 export enum EVENT_ENUM{
-    NEXT_LEVEL= "NEXT_LEVEL"
+    NEXT_LEVEL = "NEXT_LEVEL",
+    PLAY_CTRL = "PLAY_CTRL"
+
+}
+
+//玩家控制枚举
+export enum CONTROLLER_ENUM{
+    UP = "UP",
+    DOWN = "DOWN",
+    LEFT = "LEFT",
+    RIGHT = "RIGHT",
+    TURNLEFT = "TURNLEFT",
+    TURNRIGHT ="TURNRIGHT"
+}
+
+//有限状态机类型枚举
+export enum FSM_PARAMS_TYPE_ENUM{
+    TRIGGER = "TRIGGER",
+    NUMBER= "NUMBER",
 }

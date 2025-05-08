@@ -1,12 +1,14 @@
 
 import { _decorator, Component, Node } from 'cc';
 import { TileMapManager } from '../Tile/TileMapManager';
+
 import { creatUINode } from '../../utils';
 import levels, { ILevel } from '../../DATA/Levels';
 import DataManager from '../Runtime/DataManager';
 import { TILE_HEIGTH, TILE_WIDTH } from '../Tile/TileManager';
 import EventManager from '../Runtime/EventManager';
 import { EVENT_ENUM } from '../../DATA/Enums';
+import { PlayerManager } from '../Player/PlayerManager';
 const { ccclass, property } = _decorator;
 
 
@@ -42,6 +44,7 @@ export class BattleManager extends Component {
             DataManager.Instance.mapRowCount = this.level.mapInfo.length
             DataManager.Instance.mapColumnCount = this.level.mapInfo[0].length
             this.generateTileMap()
+            this.generatePlayer()
         }
     }
 
@@ -71,6 +74,14 @@ export class BattleManager extends Component {
         const tileMapManager = tileMap.addComponent(TileMapManager)
         tileMapManager.init()
         this.adaptPos()
+    }
+
+    //生成玩家
+    generatePlayer(){
+        const player = creatUINode()
+        player.setParent(this.stage)
+        const playerManager = player.addComponent(PlayerManager)
+        playerManager.init()
     }
 
     //地图适配屏幕中心
