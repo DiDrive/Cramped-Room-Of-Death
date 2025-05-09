@@ -1,30 +1,62 @@
 
-import { _decorator, Component, Event, Node } from 'cc';
+import { _decorator, Animation, AnimationClip, Component, Event, Node, SpriteFrame } from 'cc';
 import EventManager from '../Runtime/EventManager';
-import { CONTROLLER_ENUM, EVENT_ENUM, FSM_PARAMS_TYPE_ENUM } from '../../DATA/Enums';
+import { CONTROLLER_ENUM, EVENT_ENUM, FSM_PARAMS_TYPE_ENUM, PARAMS_NAME_ENUM } from '../../DATA/Enums';
 import State from '../Base/State';
+import { getInitParamsNumber, getInitParamsTrigger, StateMachine } from '../Base/StateMachine';
+import IdleSubStateMachine from './IdleSubStateMachine';
+import TurnLeftSubStateMachine from './TurnLeftSubStateMachine';
 const { ccclass, property } = _decorator;
 
-type ParamsValueType =boolean | number
-
-export interface IParamasValue{
-  type:FSM_PARAMS_TYPE_ENUM   //类型
-  value:ParamsValueType //值
-}
-
 @ccclass('PlayerStateMachine')
-export class PlayerStateMachine extends Component {
+export class PlayerStateMachine extends StateMachine {
 
-  private _currentState: State = null //当前状态
-  params: Map<string, IParamasValue> = new Map()  //参数列表
-  stateMachine: Map<string, State> = new Map()  //状态机列表
-
-  get currentState(){
-    return this._currentState
+  async init(){
+    this.animationComponent = this.addComponent(Animation)
+    this.initParams()
+    this.initStateMachine()
+    this.initAnimationEvent()
+    await Promise.all(this.waitingList)   //等待所有资源加载完成
   }
 
-  set currentState(newState: State){
-    this._currentState = newState
+
+  initParams(){   //初始化参数
+    this.params.set(PARAMS_NAME_ENUM.IDLE, getInitParamsTrigger())
+    this.params.set(PARAMS_NAME_ENUM.TURNLEFT, getInitParamsTrigger())
+    this.params.set(PARAMS_NAME_ENUM.DIRECTION,  getInitParamsNumber())
+  }
+
+  initStateMachine(){   //初始化状态机
+    this.stateMachine.set(PARAMS_NAME_ENUM.IDLE, new IdleSubStateMachine(this))
+    this.stateMachine.set(PARAMS_NAME_ENUM.TURNLEFT, new TurnLeftSubStateMachine(this))
+  }
+
+  initAnimationEvent(){
+    this.animationComponent.on(Animation.EventType.FINISHED,()=>{
+      const name =this.animationComponent.defaultClip.name
+      const whiteList =['turn']
+      if(whiteList.some(v => name.includes(v))){  //some() 方法会遍历数组中的每个元素，对每个元素执行回调函数，如果名字里面包含'turn'
+        this.setParams(PARAMS_NAME_ENUM.IDLE, true)
+      }
+    })
+  }
+
+  run(){
+    switch(this.currentState){
+      case  this.stateMachine.get(PARAMS_NAME_ENUM.TURNLEFT):
+      case  this.stateMachine.get(PARAMS_NAME_ENUM.IDLE):
+        if(this.params.get(PARAMS_NAME_ENUM.TURNLEFT).value){
+          this.currentState = this.stateMachine.get(PARAMS_NAME_ENUM.TURNLEFT)
+        }
+        else if(this.params.get(PARAMS_NAME_ENUM.IDLE).value){
+          this.currentState = this.stateMachine.get(PARAMS_NAME_ENUM.IDLE)
+        }else{
+          this.currentState = this.currentState
+        }
+        break
+      default:
+        this.currentState = this.stateMachine.get(PARAMS_NAME_ENUM.IDLE)
+    }
   }
 }
 

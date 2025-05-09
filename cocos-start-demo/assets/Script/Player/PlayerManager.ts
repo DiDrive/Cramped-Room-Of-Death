@@ -1,33 +1,41 @@
 
 import { _decorator, animation, Animation, AnimationClip, Component, Node, Sprite, SpriteFrame, UITransform, Vec3 } from 'cc';
 import EventManager from '../Runtime/EventManager';
-import { CONTROLLER_ENUM, EVENT_ENUM } from '../../DATA/Enums';
+import { CONTROLLER_ENUM, DIRECTION_ENUM, DIRECTION_ORDER_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM, PARAMS_NAME_ENUM } from '../../DATA/Enums';
 import { TILE_HEIGTH, TILE_WIDTH } from '../Tile/TileManager';
 import ResourceManager from '../Runtime/ResourceManager';
+import { PlayerStateMachine } from './PlayerStateMachine';
+import { EntityManager } from '../Base/EntityManager';
+import DataManager from '../Runtime/DataManager';
 const { ccclass, property } = _decorator;
 
-const ANIMATION_SPEED = 1/8  //动画播放速度，1秒8帧
+
 
 @ccclass('PlayerManager')
-export class PlayerManager extends Component {
-
-    //当前x,y坐标
-    x:number = 0
-    y:number = 0
+export class PlayerManager extends EntityManager {
     //目标x,y坐标
     targetX:number = 0
     targetY:number = 0
-
     private readonly moveSpeed = 1/10  //玩家移动速度
 
     async init(){
-        await this.render()
-        EventManager.Instance.on(EVENT_ENUM.PLAY_CTRL, this.move, this)
+        this.fsm = this.addComponent(PlayerStateMachine)
+        await this.fsm.init()
+        super.init({
+          x:2,
+          y:8,
+          type:ENTITY_TYPE_ENUM.PLAYER,
+          direction:DIRECTION_ENUM.UP,
+          state:ENTITY_STATE_ENUM.IDLE
+        })
+        this.targetX = this.x
+        this.targetY = this.y
+        EventManager.Instance.on(EVENT_ENUM.PLAY_CTRL, this.inputHandle, this)
     }
 
     update(){
       this.updateXY()
-      this.node.setPosition(this.x * TILE_WIDTH - TILE_WIDTH *1.5, -this.y * TILE_HEIGTH + TILE_HEIGTH *1.5)
+      super.update()
     }
 
     //瓦片地图左上角为原点（0，0）
@@ -53,35 +61,15 @@ export class PlayerManager extends Component {
       }
     }
 
-    //渲染人物动画
-    async render(){
-      const sprite = this.addComponent(Sprite)
-      sprite.sizeMode = Sprite.SizeMode.CUSTOM
 
-      const transform = this.getComponent(UITransform)
-      transform.setContentSize(TILE_WIDTH * 4,TILE_HEIGTH * 4)  //设置sprite大小
-
-
-      const spriteFrames = await ResourceManager.Instance.loadDir("texture/player/idle/top")    //sprite资源路径
-      const animationComponent = this.addComponent(Animation)
-
-      const animationClip = new AnimationClip();
-
-      const track  = new animation.ObjectTrack(); // 创建一个向量轨道
-      track.path = new animation.TrackPath().toComponent(Sprite).toProperty('spriteFrame'); // 指定轨道路径，即指定目标对象Sprite组件上的iteFrame" 属性
-
-      const frames: Array<[number, SpriteFrame]> = spriteFrames.map((item: SpriteFrame,index: number) => [ANIMATION_SPEED * index, item])
-      track.channel.curve.assignSorted(frames);
-
-      // 最后将轨道添加到动画剪辑以应用
-      animationClip.duration = frames.length * ANIMATION_SPEED; // 整个动画剪辑的周期
-      animationClip.wrapMode = AnimationClip.WrapMode.Loop    //循环播放
-      animationClip.addTrack(track);
-      animationComponent.defaultClip = animationClip
-      animationComponent.play()
+    //处理输入信息
+    inputHandle(inputDirection: CONTROLLER_ENUM){
+      if(this.willBlock(inputDirection)){
+        console.log("Bolock")
+        return
+      }
+      this.move(inputDirection)
     }
-
-
 
     move(inputDirection: CONTROLLER_ENUM){
       if(inputDirection === CONTROLLER_ENUM.UP){  //因为Cocosy轴相反，因此向上y-1
@@ -92,7 +80,44 @@ export class PlayerManager extends Component {
         this.targetX -= 1
       }else if(inputDirection === CONTROLLER_ENUM.RIGHT){
         this.targetX += 1
+      }else if(inputDirection === CONTROLLER_ENUM.TURNLEFT){
+        if(this.direction === DIRECTION_ENUM.UP){
+          this.direction =DIRECTION_ENUM.LEFT
+        }else if(this.direction === DIRECTION_ENUM.LEFT){
+          this.direction =DIRECTION_ENUM.DOWN
+        }else if(this.direction === DIRECTION_ENUM.DOWN){
+          this.direction =DIRECTION_ENUM.RIGHT
+        }else if(this.direction === DIRECTION_ENUM.RIGHT){
+          this.direction =DIRECTION_ENUM.UP
+        }
+        this.state = ENTITY_STATE_ENUM.TURNLEFT
       }
+    }
+
+    //是否碰撞
+    willBlock(inputDirection: CONTROLLER_ENUM){
+      const {targetX:x, targetY:y, direction} = this
+      const {tileInfo} = DataManager.Instance
+
+      if(inputDirection === CONTROLLER_ENUM.UP){  //当玩家朝向和点击方向都是上时
+        if(direction === DIRECTION_ENUM.UP){
+          const PlayerNextY = y-1   //玩家的下一个位置
+          const WeaponNextY = y-2   //武器的下一个位置
+          const playerTile = tileInfo[x][PlayerNextY]
+          const weanponTile = tileInfo[x][WeaponNextY]
+          if(PlayerNextY < 0){
+            return true
+          }
+
+          if(playerTile && playerTile.moveable && (!weanponTile || weanponTile.turnable)){
+            //无碰撞可以移动
+          }
+          else{
+            return true
+          }
+        }
+      }
+      return false
     }
 }
 

@@ -12,19 +12,33 @@ export enum TILE_TYPE_ENUM {
     FLOOR = 'FLOOR',
 }
 
+//方向枚举
 export enum DIRECTION_ENUM{
-
+    UP = "UP",
+    DOWN = "DOWN",
+    LEFT = "LEFT",
+    RIGHT = "RIGHT",
 }
 
+export enum DIRECTION_ORDER_ENUM{
+    UP = 0,
+    DOWN = 1,
+    LEFT = 2,
+    RIGHT = 3,
+}
 
+//实体类型枚举
 export enum ENTITY_TYPE_ENUM{
-
+    PLAYER = "PLAYER"
 }
 
+//实体状态枚举
 export enum ENTITY_STATE_ENUM{
-
+    IDLE ="IDLE",
+    TURNLEFT = "TURNLEFT"
 }
 
+//事件枚举
 export enum EVENT_ENUM{
     NEXT_LEVEL = "NEXT_LEVEL",
     PLAY_CTRL = "PLAY_CTRL"
@@ -45,4 +59,11 @@ export enum CONTROLLER_ENUM{
 export enum FSM_PARAMS_TYPE_ENUM{
     TRIGGER = "TRIGGER",
     NUMBER= "NUMBER",
+}
+
+//参数枚举
+export enum PARAMS_NAME_ENUM{
+    IDLE ="IDLE",
+    TURNLEFT = "TURNLEFT",
+    DIRECTION = "DIRECTION"
 }
