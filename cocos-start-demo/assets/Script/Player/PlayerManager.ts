@@ -116,6 +116,33 @@ export class PlayerManager extends EntityManager {
             return true
           }
         }
+      }else if(inputDirection === CONTROLLER_ENUM.TURNLEFT){
+        let nextX
+        let nextY
+        if(direction === DIRECTION_ENUM.UP){
+          nextX = x-1
+          nextY = y-1
+        }else if(direction === DIRECTION_ENUM.DOWN){
+          nextX = x+1
+          nextY = y+1
+        }
+        else if(direction === DIRECTION_ENUM.LEFT){
+          nextX = x-1
+          nextY = y+1
+        }
+        else if(direction === DIRECTION_ENUM.RIGHT){
+          nextX = x+1
+          nextY = y-1
+        }
+        if(
+          (!tileInfo[x][nextY] || tileInfo[x][nextY].turnable) &&
+          (!tileInfo[nextX][y] || tileInfo[nextX][y].turnable) &&
+          (!tileInfo[nextX][nextY] || tileInfo[nextX][nextY].turnable)
+        ){
+          //可以移动
+        }else {
+          return true
+        }
       }
       return false
     }
