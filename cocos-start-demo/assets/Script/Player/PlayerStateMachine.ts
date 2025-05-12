@@ -6,6 +6,7 @@ import State from '../Base/State';
 import { getInitParamsNumber, getInitParamsTrigger, StateMachine } from '../Base/StateMachine';
 import IdleSubStateMachine from './IdleSubStateMachine';
 import TurnLeftSubStateMachine from './TurnLeftSubStateMachine';
+import TurnRightSubStateMachine from './TurnRightSubStateMachine';
 const { ccclass, property } = _decorator;
 
 @ccclass('PlayerStateMachine')
@@ -23,12 +24,14 @@ export class PlayerStateMachine extends StateMachine {
   initParams(){   //初始化参数
     this.params.set(PARAMS_NAME_ENUM.IDLE, getInitParamsTrigger())
     this.params.set(PARAMS_NAME_ENUM.TURNLEFT, getInitParamsTrigger())
+    this.params.set(PARAMS_NAME_ENUM.TURNRIGHT, getInitParamsTrigger())
     this.params.set(PARAMS_NAME_ENUM.DIRECTION,  getInitParamsNumber())
   }
 
   initStateMachine(){   //初始化状态机
     this.stateMachine.set(PARAMS_NAME_ENUM.IDLE, new IdleSubStateMachine(this))
     this.stateMachine.set(PARAMS_NAME_ENUM.TURNLEFT, new TurnLeftSubStateMachine(this))
+    this.stateMachine.set(PARAMS_NAME_ENUM.TURNRIGHT, new TurnRightSubStateMachine(this))
   }
 
   initAnimationEvent(){
@@ -44,13 +47,18 @@ export class PlayerStateMachine extends StateMachine {
   run(){
     switch(this.currentState){
       case  this.stateMachine.get(PARAMS_NAME_ENUM.TURNLEFT):
+      case  this.stateMachine.get(PARAMS_NAME_ENUM.TURNRIGHT):
       case  this.stateMachine.get(PARAMS_NAME_ENUM.IDLE):
         if(this.params.get(PARAMS_NAME_ENUM.TURNLEFT).value){
           this.currentState = this.stateMachine.get(PARAMS_NAME_ENUM.TURNLEFT)
         }
+        else if(this.params.get(PARAMS_NAME_ENUM.TURNRIGHT).value){
+          this.currentState = this.stateMachine.get(PARAMS_NAME_ENUM.TURNRIGHT)
+        }
         else if(this.params.get(PARAMS_NAME_ENUM.IDLE).value){
           this.currentState = this.stateMachine.get(PARAMS_NAME_ENUM.IDLE)
-        }else{
+        }
+        else{
           this.currentState = this.currentState
         }
         break

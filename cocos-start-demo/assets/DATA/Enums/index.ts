@@ -35,7 +35,9 @@ export enum ENTITY_TYPE_ENUM{
 //实体状态枚举
 export enum ENTITY_STATE_ENUM{
     IDLE ="IDLE",
-    TURNLEFT = "TURNLEFT"
+    TURNLEFT = "TURNLEFT",
+    TURNRIGHT = "TURNRIGHT",
+
 }
 
 //事件枚举
@@ -65,5 +67,6 @@ export enum FSM_PARAMS_TYPE_ENUM{
 export enum PARAMS_NAME_ENUM{
     IDLE ="IDLE",
     TURNLEFT = "TURNLEFT",
+    TURNRIGHT = "TURNRIGHT",
     DIRECTION = "DIRECTION"
 }

@@ -91,6 +91,17 @@ export class PlayerManager extends EntityManager {
           this.direction =DIRECTION_ENUM.UP
         }
         this.state = ENTITY_STATE_ENUM.TURNLEFT
+      }else if(inputDirection === CONTROLLER_ENUM.TURNRIGHT){
+        if(this.direction === DIRECTION_ENUM.UP){
+          this.direction =DIRECTION_ENUM.RIGHT
+        }else if(this.direction === DIRECTION_ENUM.RIGHT){
+          this.direction =DIRECTION_ENUM.DOWN
+        }else if(this.direction === DIRECTION_ENUM.DOWN){
+          this.direction =DIRECTION_ENUM.LEFT
+        }else if(this.direction === DIRECTION_ENUM.LEFT){
+          this.direction =DIRECTION_ENUM.UP
+        }
+        this.state = ENTITY_STATE_ENUM.TURNRIGHT
       }
     }
 
@@ -100,7 +111,7 @@ export class PlayerManager extends EntityManager {
       const {tileInfo} = DataManager.Instance
 
       if(inputDirection === CONTROLLER_ENUM.UP){  //当玩家朝向和点击方向都是上时
-        if(direction === DIRECTION_ENUM.UP){
+        if(direction === DIRECTION_ENUM.UP){  //此时人物也面向上
           const PlayerNextY = y-1   //玩家的下一个位置
           const WeaponNextY = y-2   //武器的下一个位置
           const playerTile = tileInfo[x][PlayerNextY]
@@ -115,8 +126,242 @@ export class PlayerManager extends EntityManager {
           else{
             return true
           }
+        }else if(direction === DIRECTION_ENUM.LEFT){
+          const playerNextY = y-1
+          const WeaponNextX = x-1
+          const playerTile = tileInfo[x][playerNextY]
+          const weanponTile = tileInfo[WeaponNextX][playerNextY]
+          if(playerNextY < 0){
+            return true
+          }
+
+          if(playerTile && playerTile.moveable && (!weanponTile || weanponTile.turnable)){
+            //无碰撞可以移动
+          }
+          else{
+            return true
+          }
+        }else if(direction === DIRECTION_ENUM.RIGHT){
+          const playerNextY = y-1
+          const WeaponNextX = x+1
+          const playerTile = tileInfo[x][playerNextY]
+          const weanponTile = tileInfo[WeaponNextX][playerNextY]
+          if(playerNextY < 0){
+            return true
+          }
+
+          if(playerTile && playerTile.moveable && (!weanponTile || weanponTile.turnable)){
+            //无碰撞可以移动
+          }
+          else{
+            return true
+          }
+        }else if(direction === DIRECTION_ENUM.DOWN){
+          const PlayerNextY = y-1
+          const WeaponNextY = y-1
+          const playerTile = tileInfo[x][PlayerNextY]
+          const weanponTile = tileInfo[x][WeaponNextY]
+          if(PlayerNextY < 0){
+            return true
+          }
+
+          if(playerTile && playerTile.moveable && (!weanponTile || weanponTile.turnable)){
+            //无碰撞可以移动
+          }
+          else{
+            return true
+          }
         }
-      }else if(inputDirection === CONTROLLER_ENUM.TURNLEFT){
+      }else if(inputDirection === CONTROLLER_ENUM.LEFT){  //按下向左移动按键
+        if(direction === DIRECTION_ENUM.LEFT){
+          const playerNextX = x-1
+          const WeaponNextX = x-2
+          const playerTile = tileInfo[playerNextX][y]
+          const weanponTile = tileInfo[WeaponNextX][y]
+          if(playerNextX < 0){
+            return true
+          }
+
+          if(playerTile && playerTile.moveable && (!weanponTile || weanponTile.turnable)){
+            //无碰撞可以移动
+          }
+          else{
+            return true
+          }
+        }else if(direction === DIRECTION_ENUM.UP){
+          const playerNextX = x-1
+          const WeaponNextY = y-1
+          const playerTile = tileInfo[playerNextX][y]
+          const weanponTile = tileInfo[playerNextX][WeaponNextY]
+          if(playerNextX < 0){
+            return true
+          }
+
+          if(playerTile && playerTile.moveable && (!weanponTile || weanponTile.turnable)){
+            //无碰撞可以移动
+          }
+          else{
+            return true
+          }
+        }else if(direction === DIRECTION_ENUM.DOWN){
+          const playerNextX = x-1
+          const WeaponNextY = y+1
+          const playerTile = tileInfo[playerNextX][y]
+          const weanponTile = tileInfo[playerNextX][WeaponNextY]
+          if(playerNextX < 0){
+            return true
+          }
+
+          if(playerTile && playerTile.moveable && (!weanponTile || weanponTile.turnable)){
+            //无碰撞可以移动
+          }
+          else{
+            return true
+          }
+        }
+        else if(direction === DIRECTION_ENUM.RIGHT){
+          const playerNextX = x-1
+          const WeaponNextX = x-1
+          const playerTile = tileInfo[playerNextX][y]
+          const weanponTile = tileInfo[WeaponNextX][y]
+          if(playerNextX < 0){
+            return true
+          }
+
+          if(playerTile && playerTile.moveable && (!weanponTile || weanponTile.turnable)){
+            //无碰撞可以移动
+          }
+          else{
+            return true
+          }
+        }
+      }else if(inputDirection === CONTROLLER_ENUM.DOWN){  //按下向下移动按键
+        if(direction === DIRECTION_ENUM.LEFT){
+          const playerNextY = y+1
+          const WeaponNextX = x-1
+          const playerTile = tileInfo[x][playerNextY]
+          const weanponTile = tileInfo[WeaponNextX][playerNextY]
+          if(playerNextY < 0){
+            return true
+          }
+
+          if(playerTile && playerTile.moveable && (!weanponTile || weanponTile.turnable)){
+            //无碰撞可以移动
+          }
+          else{
+            return true
+          }
+        }else if(direction === DIRECTION_ENUM.UP){
+          const playerNextY = y+1
+          const WeaponNextY = y+1
+          const playerTile = tileInfo[x][playerNextY]
+          const weanponTile = tileInfo[x][WeaponNextY]
+          if(playerNextY < 0){
+            return true
+          }
+
+          if(playerTile && playerTile.moveable && (!weanponTile || weanponTile.turnable)){
+            //无碰撞可以移动
+          }
+          else{
+            return true
+          }
+        }else if(direction === DIRECTION_ENUM.DOWN){
+          const playerNextY = y+1
+          const WeaponNextY = y+2
+          const playerTile = tileInfo[x][playerNextY]
+          const weanponTile = tileInfo[x][WeaponNextY]
+          if(playerNextY < 0){
+            return true
+          }
+
+          if(playerTile && playerTile.moveable && (!weanponTile || weanponTile.turnable)){
+            //无碰撞可以移动
+          }
+          else{
+            return true
+          }
+        }
+        else if(direction === DIRECTION_ENUM.RIGHT){
+          const playerNextY = y+1
+          const WeaponNextX = x+1
+          const playerTile = tileInfo[x][playerNextY]
+          const weanponTile = tileInfo[WeaponNextX][playerNextY]
+          if(playerNextY < 0){
+            return true
+          }
+
+          if(playerTile && playerTile.moveable && (!weanponTile || weanponTile.turnable)){
+            //无碰撞可以移动
+          }
+          else{
+            return true
+          }
+        }
+      }else if(inputDirection === CONTROLLER_ENUM.RIGHT){  //按下向右移动按键
+        if(direction === DIRECTION_ENUM.LEFT){
+          const playerNextX = x+1
+          const WeaponNextX = x+1
+          const playerTile = tileInfo[playerNextX][y]
+          const weanponTile = tileInfo[WeaponNextX][y]
+          if(playerNextX < 0){
+            return true
+          }
+
+          if(playerTile && playerTile.moveable && (!weanponTile || weanponTile.turnable)){
+            //无碰撞可以移动
+          }
+          else{
+            return true
+          }
+        }else if(direction === DIRECTION_ENUM.UP){
+          const playerNextX = x+1
+          const WeaponNextY = y-1
+          const playerTile = tileInfo[playerNextX][y]
+          const weanponTile = tileInfo[playerNextX][WeaponNextY]
+          if(playerNextX < 0){
+            return true
+          }
+
+          if(playerTile && playerTile.moveable && (!weanponTile || weanponTile.turnable)){
+            //无碰撞可以移动
+          }
+          else{
+            return true
+          }
+        }else if(direction === DIRECTION_ENUM.DOWN){
+          const playerNextX = x+1
+          const WeaponNextY = y+1
+          const playerTile = tileInfo[playerNextX][y]
+          const weanponTile = tileInfo[playerNextX][WeaponNextY]
+          if(playerNextX < 0){
+            return true
+          }
+
+          if(playerTile && playerTile.moveable && (!weanponTile || weanponTile.turnable)){
+            //无碰撞可以移动
+          }
+          else{
+            return true
+          }
+        }
+        else if(direction === DIRECTION_ENUM.RIGHT){
+          const playerNextX = x+1
+          const WeaponNextX = x+2
+          const playerTile = tileInfo[playerNextX][y]
+          const weanponTile = tileInfo[WeaponNextX][y]
+          if(playerNextX < 0){
+            return true
+          }
+
+          if(playerTile && playerTile.moveable && (!weanponTile || weanponTile.turnable)){
+            //无碰撞可以移动
+          }
+          else{
+            return true
+          }
+        }
+      }else if(inputDirection === CONTROLLER_ENUM.TURNLEFT){  //左转
         let nextX
         let nextY
         if(direction === DIRECTION_ENUM.UP){
@@ -132,6 +377,32 @@ export class PlayerManager extends EntityManager {
         }
         else if(direction === DIRECTION_ENUM.RIGHT){
           nextX = x+1
+          nextY = y-1
+        }
+        if(
+          (!tileInfo[x][nextY] || tileInfo[x][nextY].turnable) &&
+          (!tileInfo[nextX][y] || tileInfo[nextX][y].turnable) &&
+          (!tileInfo[nextX][nextY] || tileInfo[nextX][nextY].turnable)
+        ){
+          //可以移动
+        }else {
+          return true
+        }
+      }else if(inputDirection === CONTROLLER_ENUM.TURNRIGHT){  //右转
+        let nextX
+        let nextY
+        if(direction === DIRECTION_ENUM.UP){
+          nextX = x+1
+          nextY = y-1
+        }else if(direction === DIRECTION_ENUM.RIGHT){
+          nextX = x+1
+          nextY = y+1
+        }else if(direction === DIRECTION_ENUM.DOWN){
+          nextX = x-1
+          nextY = y+1
+        }
+        else if(direction === DIRECTION_ENUM.LEFT){
+          nextX = x-1
           nextY = y-1
         }
         if(
