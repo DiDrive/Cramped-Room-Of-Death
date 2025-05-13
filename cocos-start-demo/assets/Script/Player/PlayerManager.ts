@@ -110,13 +110,14 @@ export class PlayerManager extends EntityManager {
       const {targetX:x, targetY:y, direction} = this
       const {tileInfo} = DataManager.Instance
 
-      if(inputDirection === CONTROLLER_ENUM.UP){  //当玩家朝向和点击方向都是上时
+      if(inputDirection === CONTROLLER_ENUM.UP){  //玩家点击方向是上
         if(direction === DIRECTION_ENUM.UP){  //此时人物也面向上
           const PlayerNextY = y-1   //玩家的下一个位置
           const WeaponNextY = y-2   //武器的下一个位置
           const playerTile = tileInfo[x][PlayerNextY]
           const weanponTile = tileInfo[x][WeaponNextY]
           if(PlayerNextY < 0){
+            this.state = ENTITY_STATE_ENUM.BLOCKFRONT
             return true
           }
 
@@ -124,6 +125,7 @@ export class PlayerManager extends EntityManager {
             //无碰撞可以移动
           }
           else{
+            this.state = ENTITY_STATE_ENUM.BLOCKFRONT
             return true
           }
         }else if(direction === DIRECTION_ENUM.LEFT){
@@ -132,6 +134,7 @@ export class PlayerManager extends EntityManager {
           const playerTile = tileInfo[x][playerNextY]
           const weanponTile = tileInfo[WeaponNextX][playerNextY]
           if(playerNextY < 0){
+            this.state = ENTITY_STATE_ENUM.BLOCKRIGHT
             return true
           }
 
@@ -139,6 +142,7 @@ export class PlayerManager extends EntityManager {
             //无碰撞可以移动
           }
           else{
+            this.state = ENTITY_STATE_ENUM.BLOCKRIGHT
             return true
           }
         }else if(direction === DIRECTION_ENUM.RIGHT){
@@ -147,6 +151,7 @@ export class PlayerManager extends EntityManager {
           const playerTile = tileInfo[x][playerNextY]
           const weanponTile = tileInfo[WeaponNextX][playerNextY]
           if(playerNextY < 0){
+             this.state = ENTITY_STATE_ENUM.BLOCKLEFT
             return true
           }
 
@@ -154,6 +159,7 @@ export class PlayerManager extends EntityManager {
             //无碰撞可以移动
           }
           else{
+             this.state = ENTITY_STATE_ENUM.BLOCKLEFT
             return true
           }
         }else if(direction === DIRECTION_ENUM.DOWN){
@@ -162,6 +168,7 @@ export class PlayerManager extends EntityManager {
           const playerTile = tileInfo[x][PlayerNextY]
           const weanponTile = tileInfo[x][WeaponNextY]
           if(PlayerNextY < 0){
+             this.state = ENTITY_STATE_ENUM.BLOCKBACK
             return true
           }
 
@@ -169,6 +176,7 @@ export class PlayerManager extends EntityManager {
             //无碰撞可以移动
           }
           else{
+            this.state = ENTITY_STATE_ENUM.BLOCKBACK
             return true
           }
         }
@@ -179,6 +187,7 @@ export class PlayerManager extends EntityManager {
           const playerTile = tileInfo[playerNextX][y]
           const weanponTile = tileInfo[WeaponNextX][y]
           if(playerNextX < 0){
+            this.state = ENTITY_STATE_ENUM.BLOCKFRONT
             return true
           }
 
@@ -186,6 +195,7 @@ export class PlayerManager extends EntityManager {
             //无碰撞可以移动
           }
           else{
+            this.state = ENTITY_STATE_ENUM.BLOCKFRONT
             return true
           }
         }else if(direction === DIRECTION_ENUM.UP){
@@ -194,6 +204,7 @@ export class PlayerManager extends EntityManager {
           const playerTile = tileInfo[playerNextX][y]
           const weanponTile = tileInfo[playerNextX][WeaponNextY]
           if(playerNextX < 0){
+            this.state = ENTITY_STATE_ENUM.BLOCKLEFT
             return true
           }
 
@@ -201,6 +212,7 @@ export class PlayerManager extends EntityManager {
             //无碰撞可以移动
           }
           else{
+            this.state = ENTITY_STATE_ENUM.BLOCKLEFT
             return true
           }
         }else if(direction === DIRECTION_ENUM.DOWN){
@@ -209,6 +221,7 @@ export class PlayerManager extends EntityManager {
           const playerTile = tileInfo[playerNextX][y]
           const weanponTile = tileInfo[playerNextX][WeaponNextY]
           if(playerNextX < 0){
+            this.state = ENTITY_STATE_ENUM.BLOCKRIGHT
             return true
           }
 
@@ -216,6 +229,7 @@ export class PlayerManager extends EntityManager {
             //无碰撞可以移动
           }
           else{
+            this.state = ENTITY_STATE_ENUM.BLOCKRIGHT
             return true
           }
         }
@@ -225,6 +239,7 @@ export class PlayerManager extends EntityManager {
           const playerTile = tileInfo[playerNextX][y]
           const weanponTile = tileInfo[WeaponNextX][y]
           if(playerNextX < 0){
+            this.state = ENTITY_STATE_ENUM.BLOCKBACK
             return true
           }
 
@@ -232,6 +247,7 @@ export class PlayerManager extends EntityManager {
             //无碰撞可以移动
           }
           else{
+            this.state = ENTITY_STATE_ENUM.BLOCKBACK
             return true
           }
         }
@@ -242,6 +258,7 @@ export class PlayerManager extends EntityManager {
           const playerTile = tileInfo[x][playerNextY]
           const weanponTile = tileInfo[WeaponNextX][playerNextY]
           if(playerNextY < 0){
+            this.state = ENTITY_STATE_ENUM.BLOCKLEFT
             return true
           }
 
@@ -249,6 +266,7 @@ export class PlayerManager extends EntityManager {
             //无碰撞可以移动
           }
           else{
+            this.state = ENTITY_STATE_ENUM.BLOCKLEFT
             return true
           }
         }else if(direction === DIRECTION_ENUM.UP){
@@ -257,6 +275,7 @@ export class PlayerManager extends EntityManager {
           const playerTile = tileInfo[x][playerNextY]
           const weanponTile = tileInfo[x][WeaponNextY]
           if(playerNextY < 0){
+            this.state = ENTITY_STATE_ENUM.BLOCKBACK
             return true
           }
 
@@ -264,6 +283,7 @@ export class PlayerManager extends EntityManager {
             //无碰撞可以移动
           }
           else{
+            this.state = ENTITY_STATE_ENUM.BLOCKBACK
             return true
           }
         }else if(direction === DIRECTION_ENUM.DOWN){
@@ -272,6 +292,7 @@ export class PlayerManager extends EntityManager {
           const playerTile = tileInfo[x][playerNextY]
           const weanponTile = tileInfo[x][WeaponNextY]
           if(playerNextY < 0){
+            this.state = ENTITY_STATE_ENUM.BLOCKFRONT
             return true
           }
 
@@ -279,6 +300,7 @@ export class PlayerManager extends EntityManager {
             //无碰撞可以移动
           }
           else{
+            this.state = ENTITY_STATE_ENUM.BLOCKFRONT
             return true
           }
         }
@@ -288,6 +310,7 @@ export class PlayerManager extends EntityManager {
           const playerTile = tileInfo[x][playerNextY]
           const weanponTile = tileInfo[WeaponNextX][playerNextY]
           if(playerNextY < 0){
+            this.state = ENTITY_STATE_ENUM.BLOCKRIGHT
             return true
           }
 
@@ -295,6 +318,7 @@ export class PlayerManager extends EntityManager {
             //无碰撞可以移动
           }
           else{
+            this.state = ENTITY_STATE_ENUM.BLOCKRIGHT
             return true
           }
         }
@@ -305,6 +329,7 @@ export class PlayerManager extends EntityManager {
           const playerTile = tileInfo[playerNextX][y]
           const weanponTile = tileInfo[WeaponNextX][y]
           if(playerNextX < 0){
+            this.state = ENTITY_STATE_ENUM.BLOCKBACK
             return true
           }
 
@@ -312,6 +337,7 @@ export class PlayerManager extends EntityManager {
             //无碰撞可以移动
           }
           else{
+            this.state = ENTITY_STATE_ENUM.BLOCKBACK
             return true
           }
         }else if(direction === DIRECTION_ENUM.UP){
@@ -320,6 +346,7 @@ export class PlayerManager extends EntityManager {
           const playerTile = tileInfo[playerNextX][y]
           const weanponTile = tileInfo[playerNextX][WeaponNextY]
           if(playerNextX < 0){
+            this.state = ENTITY_STATE_ENUM.BLOCKRIGHT
             return true
           }
 
@@ -327,6 +354,7 @@ export class PlayerManager extends EntityManager {
             //无碰撞可以移动
           }
           else{
+            this.state = ENTITY_STATE_ENUM.BLOCKRIGHT
             return true
           }
         }else if(direction === DIRECTION_ENUM.DOWN){
@@ -335,6 +363,7 @@ export class PlayerManager extends EntityManager {
           const playerTile = tileInfo[playerNextX][y]
           const weanponTile = tileInfo[playerNextX][WeaponNextY]
           if(playerNextX < 0){
+            this.state = ENTITY_STATE_ENUM.BLOCKLEFT
             return true
           }
 
@@ -342,6 +371,7 @@ export class PlayerManager extends EntityManager {
             //无碰撞可以移动
           }
           else{
+            this.state = ENTITY_STATE_ENUM.BLOCKLEFT
             return true
           }
         }
@@ -351,6 +381,7 @@ export class PlayerManager extends EntityManager {
           const playerTile = tileInfo[playerNextX][y]
           const weanponTile = tileInfo[WeaponNextX][y]
           if(playerNextX < 0){
+            this.state = ENTITY_STATE_ENUM.BLOCKFRONT
             return true
           }
 
@@ -358,6 +389,7 @@ export class PlayerManager extends EntityManager {
             //无碰撞可以移动
           }
           else{
+            this.state = ENTITY_STATE_ENUM.BLOCKFRONT
             return true
           }
         }
@@ -386,6 +418,7 @@ export class PlayerManager extends EntityManager {
         ){
           //可以移动
         }else {
+          this.state = ENTITY_STATE_ENUM.BLOCKTRUNLEFT
           return true
         }
       }else if(inputDirection === CONTROLLER_ENUM.TURNRIGHT){  //右转
@@ -412,6 +445,7 @@ export class PlayerManager extends EntityManager {
         ){
           //可以移动
         }else {
+          this.state = ENTITY_STATE_ENUM.BLOCKTRUNRIGHT
           return true
         }
       }
