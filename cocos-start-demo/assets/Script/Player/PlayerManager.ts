@@ -17,6 +17,7 @@ export class PlayerManager extends EntityManager {
     targetX:number = 0
     targetY:number = 0
     private readonly moveSpeed = 1/10  //玩家移动速度
+    ismoving:boolean
 
     async init(){
         this.fsm = this.addComponent(PlayerStateMachine)
@@ -30,7 +31,8 @@ export class PlayerManager extends EntityManager {
         })
         this.targetX = this.x
         this.targetY = this.y
-        EventManager.Instance.on(EVENT_ENUM.PLAY_CTRL, this.inputHandle, this)
+        EventManager.Instance.on(EVENT_ENUM.PLAYER_CTRL, this.inputHandle, this)
+        EventManager.Instance.on(EVENT_ENUM.ATTACK_PLAYER, this.onDead, this)
     }
 
     update(){
@@ -55,31 +57,55 @@ export class PlayerManager extends EntityManager {
 
 
       //距离目标位置过近直接赋值，防止抽搐
-      if(Math.abs(this.targetX - this.x) <= 0.1  && Math.abs(this.targetY - this.y) <= 0.1 ){
+      if(Math.abs(this.targetX - this.x) <= 0.1  && Math.abs(this.targetY - this.y) <= 0.1 && this.ismoving){
+        this.ismoving = false
         this.x = this.targetX
         this.y = this.targetY
+        EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
       }
     }
 
 
     //处理输入信息
     inputHandle(inputDirection: CONTROLLER_ENUM){
+      if(this.ismoving){
+        return
+      }
+      if(this.state === ENTITY_STATE_ENUM.DEATH || this.state === ENTITY_STATE_ENUM.AIRDEATH){    //死亡禁止移动
+        return
+      }
+      if(this.willAttack(inputDirection)){
+        return
+      }
       if(this.willBlock(inputDirection)){
-        console.log("Bolock")
+        //console.log("Bolock")
         return
       }
       this.move(inputDirection)
     }
 
+    //玩家死亡
+    onDead(type:ENTITY_STATE_ENUM){
+      this.state = type
+
+    }
+
+
+    //玩家移动
     move(inputDirection: CONTROLLER_ENUM){
+
       if(inputDirection === CONTROLLER_ENUM.UP){  //因为Cocosy轴相反，因此向上y-1
         this.targetY -= 1
+        this.ismoving = true
       }else if(inputDirection === CONTROLLER_ENUM.DOWN){
         this.targetY += 1
+        this.ismoving = true
       }else if(inputDirection === CONTROLLER_ENUM.LEFT){
         this.targetX -= 1
+        this.ismoving = true
       }else if(inputDirection === CONTROLLER_ENUM.RIGHT){
         this.targetX += 1
+        this.ismoving = true
       }else if(inputDirection === CONTROLLER_ENUM.TURNLEFT){
         if(this.direction === DIRECTION_ENUM.UP){
           this.direction =DIRECTION_ENUM.LEFT
@@ -90,6 +116,7 @@ export class PlayerManager extends EntityManager {
         }else if(this.direction === DIRECTION_ENUM.RIGHT){
           this.direction =DIRECTION_ENUM.UP
         }
+        EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
         this.state = ENTITY_STATE_ENUM.TURNLEFT
       }else if(inputDirection === CONTROLLER_ENUM.TURNRIGHT){
         if(this.direction === DIRECTION_ENUM.UP){
@@ -103,6 +130,27 @@ export class PlayerManager extends EntityManager {
         }
         this.state = ENTITY_STATE_ENUM.TURNRIGHT
       }
+    }
+
+    willAttack(inputDirection: CONTROLLER_ENUM){
+      const enemies = DataManager.Instance.enemies
+      for(let i = 0; i<enemies.length; i++){
+        const {x:enemyX,y:enemyY} =enemies[i]
+        if(inputDirection ===CONTROLLER_ENUM.UP &&this.direction ===DIRECTION_ENUM.UP && enemyX ===this.x && enemyY === this.targetY-2){
+          this.state = ENTITY_STATE_ENUM.ATTACK
+          return true
+        }else if(inputDirection ===CONTROLLER_ENUM.LEFT &&this.direction ===DIRECTION_ENUM.LEFT && enemyX ===this.x-2 && enemyY === this.targetY){
+          this.state = ENTITY_STATE_ENUM.ATTACK
+          return true
+        }else if(inputDirection ===CONTROLLER_ENUM.DOWN &&this.direction ===DIRECTION_ENUM.DOWN && enemyX ===this.x && enemyY === this.targetY+2){
+          this.state = ENTITY_STATE_ENUM.ATTACK
+          return true
+        }else if(inputDirection ===CONTROLLER_ENUM.RIGHT &&this.direction ===DIRECTION_ENUM.RIGHT && enemyX ===this.x+2 && enemyY === this.targetY){
+          this.state = ENTITY_STATE_ENUM.ATTACK
+          return true
+        }
+      }
+      return false
     }
 
     //是否碰撞

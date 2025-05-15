@@ -10,7 +10,7 @@ const { ccclass, property } = _decorator;
 export class ControllerManager extends Component {
 
     handleCtrl(evt:Event, type: string){
-        EventManager.Instance.emit(EVENT_ENUM.PLAY_CTRL, type as CONTROLLER_ENUM)
+        EventManager.Instance.emit(EVENT_ENUM.PLAYER_CTRL, type as CONTROLLER_ENUM)
     }
 }
 

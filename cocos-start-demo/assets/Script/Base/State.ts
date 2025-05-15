@@ -3,6 +3,7 @@ import { PlayerStateMachine } from "../Player/PlayerStateMachine";
 import { TILE_HEIGTH, TILE_WIDTH } from "../Tile/TileManager";
 import ResourceManager from "../Runtime/ResourceManager";
 import { StateMachine } from "./StateMachine";
+import { sortSpriteFrames } from "../../utils";
 
 /*
 播放对应动画
@@ -24,7 +25,8 @@ export default class State{
   async init(){
       const promise = ResourceManager.Instance.loadDir(this.path)    //加载sprite资源
       this.fsm.waitingList.push(promise)  //将Promise添加到等待列表
-      const spriteFrames = await promise
+      let spriteFrames = await promise
+      spriteFrames = sortSpriteFrames(spriteFrames)
 
       this.animationClip = new AnimationClip();
       const track  = new animation.ObjectTrack(); // 创建一个向量轨道
@@ -40,6 +42,9 @@ export default class State{
   }
 
   run(){  //播放动画
+    if(this.fsm.animationComponent?.defaultClip?.name === this.animationClip.name){
+      return
+    }
     this.fsm.animationComponent.defaultClip = this.animationClip
     this.fsm.animationComponent.play()
   }

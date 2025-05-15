@@ -3,7 +3,7 @@ import { _decorator, animation, Animation, AnimationClip, Component, Node, Sprit
 import { CONTROLLER_ENUM, DIRECTION_ENUM, DIRECTION_ORDER_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM, PARAMS_NAME_ENUM } from '../../DATA/Enums';
 import { TILE_HEIGTH, TILE_WIDTH } from '../Tile/TileManager';
 import { IEntity } from '../../DATA/Levels';
-import { PlayerStateMachine } from '../Player/PlayerStateMachine';
+import { StateMachine } from './StateMachine';
 const { ccclass, property } = _decorator;
 /***
  * 实体基类
@@ -14,7 +14,7 @@ export class EntityManager extends Component {
     //当前x,y坐标
     x:number = 0
     y:number = 0
-    fsm: PlayerStateMachine
+    fsm: StateMachine
 
     private _direction: DIRECTION_ENUM
     private _state: ENTITY_STATE_ENUM
