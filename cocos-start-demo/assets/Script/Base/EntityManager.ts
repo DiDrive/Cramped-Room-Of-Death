@@ -4,6 +4,7 @@ import { CONTROLLER_ENUM, DIRECTION_ENUM, DIRECTION_ORDER_ENUM, ENTITY_STATE_ENU
 import { TILE_HEIGTH, TILE_WIDTH } from '../Tile/TileManager';
 import { IEntity } from '../../DATA/Levels';
 import { StateMachine } from './StateMachine';
+import { randomByLen } from '../../utils';
 const { ccclass, property } = _decorator;
 /***
  * 实体基类
@@ -12,6 +13,7 @@ const { ccclass, property } = _decorator;
 export class EntityManager extends Component {
 
     //当前x,y坐标
+    id:string = randomByLen(12)
     x:number = 0
     y:number = 0
     fsm: StateMachine
@@ -55,6 +57,9 @@ export class EntityManager extends Component {
       this.node.setPosition(this.x * TILE_WIDTH - TILE_WIDTH *1.5, -this.y * TILE_HEIGTH + TILE_HEIGTH *1.5)
     }
 
+    onDestroy(){
+
+    }
 
 }
 

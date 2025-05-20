@@ -1,10 +1,10 @@
-
 import { _decorator, Component, Node } from 'cc';
 import { ITile } from '../../DATA/Levels';
 import SingleTon from '../Base/SingleTon';
 import { TileManager } from '../Tile/TileManager';
 import { PlayerManager } from '../Player/PlayerManager';
-import { WoodenSkeletonManager } from '../WoodenSkeleton/WoodenSkeletonManager';
+import { DoorManager } from '../Door/DoorManager';
+import { EnemyManager } from '../Base/EnemyManager';
 const { ccclass, property } = _decorator;
 
 
@@ -20,13 +20,15 @@ export default class DataManager extends SingleTon{
     mapColumnCount:number = 0
     levelIndex:number = 1   //当前关卡index
     player:PlayerManager
-    enemies:WoodenSkeletonManager[]
+    door:DoorManager
+    enemies:EnemyManager[]
 
     reset(){
         this.mapInfo = []
         this.tileInfo = []
         this.enemies = []
         this.player = null
+        this.door = null
         this.mapRowCount = 0
         this.mapColumnCount = 0
     }

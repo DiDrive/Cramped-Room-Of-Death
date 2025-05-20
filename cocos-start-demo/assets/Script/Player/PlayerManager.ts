@@ -7,6 +7,7 @@ import ResourceManager from '../Runtime/ResourceManager';
 import { PlayerStateMachine } from './PlayerStateMachine';
 import { EntityManager } from '../Base/EntityManager';
 import DataManager from '../Runtime/DataManager';
+import { IEntity } from '../../DATA/Levels';
 const { ccclass, property } = _decorator;
 
 
@@ -19,16 +20,10 @@ export class PlayerManager extends EntityManager {
     private readonly moveSpeed = 1/10  //玩家移动速度
     ismoving:boolean
 
-    async init(){
+    async init(params:IEntity){
         this.fsm = this.addComponent(PlayerStateMachine)
         await this.fsm.init()
-        super.init({
-          x:2,
-          y:8,
-          type:ENTITY_TYPE_ENUM.PLAYER,
-          direction:DIRECTION_ENUM.UP,
-          state:ENTITY_STATE_ENUM.IDLE
-        })
+        super.init(params)
         this.targetX = this.x
         this.targetY = this.y
         EventManager.Instance.on(EVENT_ENUM.PLAYER_CTRL, this.inputHandle, this)
@@ -71,10 +66,14 @@ export class PlayerManager extends EntityManager {
       if(this.ismoving){
         return
       }
-      if(this.state === ENTITY_STATE_ENUM.DEATH || this.state === ENTITY_STATE_ENUM.AIRDEATH){    //死亡禁止移动
+      if(this.state === ENTITY_STATE_ENUM.DEATH || this.state === ENTITY_STATE_ENUM.AIRDEATH || this.state === ENTITY_STATE_ENUM.ATTACK){    //死亡禁止移动
         return
       }
-      if(this.willAttack(inputDirection)){
+
+      const id = this.willAttack(inputDirection)
+      if(id){
+        EventManager.Instance.emit(EVENT_ENUM.ATTACK_ENEMY, id)
+        //EventManager.Instance.emit(EVENT_ENUM.DOOR_OPEN)  //刚攻击就判断门是否能开启
         return
       }
       if(this.willBlock(inputDirection)){
@@ -133,30 +132,32 @@ export class PlayerManager extends EntityManager {
     }
 
     willAttack(inputDirection: CONTROLLER_ENUM){
-      const enemies = DataManager.Instance.enemies
+      const enemies = DataManager.Instance.enemies.filter(enemy =>enemy.state !== ENTITY_STATE_ENUM.DEATH)
       for(let i = 0; i<enemies.length; i++){
-        const {x:enemyX,y:enemyY} =enemies[i]
+        const {x:enemyX,y:enemyY,id:enemyId} =enemies[i]
         if(inputDirection ===CONTROLLER_ENUM.UP &&this.direction ===DIRECTION_ENUM.UP && enemyX ===this.x && enemyY === this.targetY-2){
           this.state = ENTITY_STATE_ENUM.ATTACK
-          return true
+          return enemyId
         }else if(inputDirection ===CONTROLLER_ENUM.LEFT &&this.direction ===DIRECTION_ENUM.LEFT && enemyX ===this.x-2 && enemyY === this.targetY){
           this.state = ENTITY_STATE_ENUM.ATTACK
-          return true
+          return enemyId
         }else if(inputDirection ===CONTROLLER_ENUM.DOWN &&this.direction ===DIRECTION_ENUM.DOWN && enemyX ===this.x && enemyY === this.targetY+2){
           this.state = ENTITY_STATE_ENUM.ATTACK
-          return true
+          return enemyId
         }else if(inputDirection ===CONTROLLER_ENUM.RIGHT &&this.direction ===DIRECTION_ENUM.RIGHT && enemyX ===this.x+2 && enemyY === this.targetY){
           this.state = ENTITY_STATE_ENUM.ATTACK
-          return true
+          return enemyId
         }
       }
-      return false
+      return ''
     }
 
     //是否碰撞
     willBlock(inputDirection: CONTROLLER_ENUM){
       const {targetX:x, targetY:y, direction} = this
       const {tileInfo} = DataManager.Instance
+      const {x:doorX, y:doorY, state:doorState} = DataManager.Instance.door
+      const enemies = DataManager.Instance.enemies.filter(enemy => enemy.state !==ENTITY_STATE_ENUM.DEATH)
 
       if(inputDirection === CONTROLLER_ENUM.UP){  //玩家点击方向是上
         if(direction === DIRECTION_ENUM.UP){  //此时人物也面向上
@@ -167,6 +168,20 @@ export class PlayerManager extends EntityManager {
           if(PlayerNextY < 0){
             this.state = ENTITY_STATE_ENUM.BLOCKFRONT
             return true
+          }
+
+          if(((x === doorX && PlayerNextY ===doorY) || (x === doorX && WeaponNextY === doorY)) &&
+           doorState !== ENTITY_STATE_ENUM.DEATH)
+          {
+            this.state = ENTITY_STATE_ENUM.BLOCKFRONT
+            return true
+          }
+          for(let i =0; i < enemies.length; i++){
+            const {x:enemyX, y:enemyY} = enemies[i]
+            if((x === enemyX && PlayerNextY ===enemyY) || (x === enemyX && WeaponNextY === enemyY)){
+            this.state = ENTITY_STATE_ENUM.BLOCKFRONT
+            return true
+            }
           }
 
           if(playerTile && playerTile.moveable && (!weanponTile || weanponTile.turnable)){
@@ -459,6 +474,28 @@ export class PlayerManager extends EntityManager {
           nextX = x+1
           nextY = y-1
         }
+        //玩家与门的碰撞
+        if(((x === doorX && nextY === doorY) ||
+            (nextX === doorX && y === doorY) ||
+            (nextX === doorX && nextY === doorY)) &&
+            doorState !== ENTITY_STATE_ENUM.DEATH
+        ){
+          this.state = ENTITY_STATE_ENUM.BLOCKTRUNLEFT
+          return true
+        }
+
+        for(let i =0; i < enemies.length; i++){
+            const {x:enemyX, y:enemyY} = enemies[i]
+            if(
+              (x === enemyX && nextY === enemyY) ||
+              (nextX === enemyX && y === enemyY) ||
+              (nextX === enemyX && nextY === enemyY)
+          ){
+            this.state = ENTITY_STATE_ENUM.BLOCKTRUNLEFT
+            return true
+        }
+          }
+
         if(
           (!tileInfo[x][nextY] || tileInfo[x][nextY].turnable) &&
           (!tileInfo[nextX][y] || tileInfo[nextX][y].turnable) &&
