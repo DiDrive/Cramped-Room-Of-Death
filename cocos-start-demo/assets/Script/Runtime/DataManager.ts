@@ -5,6 +5,8 @@ import { TileManager } from '../Tile/TileManager';
 import { PlayerManager } from '../Player/PlayerManager';
 import { DoorManager } from '../Door/DoorManager';
 import { EnemyManager } from '../Base/EnemyManager';
+import { BurstManager } from '../Burst/BurstManager';
+import { SpikesManager } from '../Spikes/SpikesManager';
 const { ccclass, property } = _decorator;
 
 
@@ -21,12 +23,16 @@ export default class DataManager extends SingleTon{
     levelIndex:number = 1   //当前关卡index
     player:PlayerManager
     door:DoorManager
+    burst:BurstManager[]
     enemies:EnemyManager[]
+    spikes:SpikesManager[]
 
     reset(){
         this.mapInfo = []
         this.tileInfo = []
         this.enemies = []
+        this.burst = []
+        this.spikes = []
         this.player = null
         this.door = null
         this.mapRowCount = 0

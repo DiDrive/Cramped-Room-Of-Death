@@ -33,6 +33,11 @@ export enum ENTITY_TYPE_ENUM{
     SKELETON_WOODEN = "SKELETON_WOODEN",
     SKELETON_IRON= "SKELETON_IRON",
     DOOR = "DOOR",
+    BURST = "BURST",
+    SPIKES_ONE = "SPIKES_ONE",
+    SPIKES_TWO = "SPIKES_TWO",
+    SPIKES_THREE = "SPIKES_THREE",
+    SPIKES_FOUR = "SPIKES_FOUR",
 }
 
 //实体状态枚举
@@ -94,4 +99,32 @@ export enum PARAMS_NAME_ENUM{
     ATTACK = "ATTACK",
     DEATH = "DEATH",
     AIRDEATH = "AIRDEATH",
+    SPIKES_CUR_COUNT = "SPIKES_CUR_COUNT",
+    SPIKES_TOTAL_COUNT = "SPIKES_TOTAL_COUNT",
+}
+
+//地刺type映射为number
+export enum SPIKES_TYPE_MAP_TOTAL_COUNT_ENUM{
+    SPIKES_ONE = 2,
+    SPIKES_TWO = 3,
+    SPIKES_THREE = 4,
+    SPIKES_FOUR = 5,
+}
+
+export enum SPIKES_COUNT_ENUM{
+    ZERO = "ZERO",
+    ONE = "ONE",
+    TWO = "TWO",
+    THREE = "THREE",
+    FOUR = "FOUR",
+    FIVE = "FIVE",
+}
+
+export enum SPIKES_COUNT_MAP_NUMBER_ENUM{
+    ZERO = 0,
+    ONE = 1,
+    TWO = 2,
+    THREE = 3,
+    FOUR = 4,
+    FIVE = 5,
 }

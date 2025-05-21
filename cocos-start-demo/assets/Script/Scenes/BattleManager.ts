@@ -12,6 +12,8 @@ import { PlayerManager } from '../Player/PlayerManager';
 import { WoodenSkeletonManager } from '../WoodenSkeleton/WoodenSkeletonManager';
 import { IronSkeletonManager } from '../IronSkeleton/IronSkeletonManager'
 import { DoorManager } from '../Door/DoorManager';
+import { BurstManager } from '../Burst/BurstManager';
+import { SpikesManager } from '../Spikes/SpikesManager';
 const { ccclass, property } = _decorator;
 
 
@@ -47,6 +49,8 @@ export class BattleManager extends Component {
             DataManager.Instance.mapRowCount = this.level.mapInfo.length
             DataManager.Instance.mapColumnCount = this.level.mapInfo[0].length
             this.generateTileMap()
+            this.generateBurst()
+            this.generateSpikes()
             this.generateDoor()
             this.generateEnemies()
             this.generatePlayer()
@@ -104,8 +108,8 @@ export class BattleManager extends Component {
         enemies1.setParent(this.stage)
         const woodenSkeletonManager = enemies1.addComponent(WoodenSkeletonManager)
         await woodenSkeletonManager.init({
-                  x:2,
-                  y:4,
+                  x:1,
+                  y:6,
                   type:ENTITY_TYPE_ENUM.SKELETON_WOODEN,
                   direction:DIRECTION_ENUM.UP,
                   state:ENTITY_STATE_ENUM.IDLE
@@ -140,7 +144,34 @@ export class BattleManager extends Component {
         DataManager.Instance.door = doorManager
     }
 
+    //生成地缝
+    async generateBurst(){
+        const burst = creatUINode()
+        burst.setParent(this.stage)
+        const burstManager = burst.addComponent(BurstManager)
+        await burstManager.init({
+                  x:2,
+                  y:6,
+                  type:ENTITY_TYPE_ENUM.BURST,
+                  direction:DIRECTION_ENUM.UP,
+                  state:ENTITY_STATE_ENUM.IDLE
+                })
+        DataManager.Instance.burst.push(burstManager)
+    }
 
+    //生成地刺
+    async generateSpikes(){
+        const spikes = creatUINode()
+        spikes.setParent(this.stage)
+        const spikesManager = spikes.addComponent(SpikesManager)
+        await spikesManager.init({
+                  x:2,
+                  y:5,
+                  type:ENTITY_TYPE_ENUM.SPIKES_FOUR,
+                  count:0
+                })
+        DataManager.Instance.spikes.push(spikesManager)
+    }
     //地图适配屏幕中心
     adaptPos(){
         const {mapColumnCount,mapRowCount} =DataManager.Instance

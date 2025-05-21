@@ -1,8 +1,6 @@
 
-import { _decorator, Animation, AnimationClip, Component, Event, Node, SpriteFrame } from 'cc';
-import EventManager from '../Runtime/EventManager';
-import { CONTROLLER_ENUM, ENTITY_STATE_ENUM, EVENT_ENUM, FSM_PARAMS_TYPE_ENUM, PARAMS_NAME_ENUM } from '../../DATA/Enums';
-import State from '../Base/State';
+import { _decorator, Animation} from 'cc';
+import { ENTITY_STATE_ENUM, PARAMS_NAME_ENUM } from '../../DATA/Enums';
 import { getInitParamsNumber, getInitParamsTrigger, StateMachine } from '../Base/StateMachine';
 import IdleSubStateMachine from './IdleSubStateMachine';
 import TurnLeftSubStateMachine from './TurnLeftSubStateMachine';
@@ -16,6 +14,7 @@ import BlockLeftSubStateMachine from './BlockLeftSubStateMachine';
 import BlockRightSubStateMachine from './BlockRightSubStateMachine';
 import DeadSubStateMachine from './DeadSubStateMachine';
 import AttackSubStateMachine from './AttackSubStateMachine';
+import AirDeathSubStateMachine from './AirDeathSubStateMachine';
 const { ccclass, property } = _decorator;
 
 @ccclass('PlayerStateMachine')
@@ -42,6 +41,7 @@ export class PlayerStateMachine extends StateMachine {
     this.params.set(PARAMS_NAME_ENUM.BLOCKLEFT, getInitParamsTrigger())
     this.params.set(PARAMS_NAME_ENUM.BLOCKRIGHT, getInitParamsTrigger())
     this.params.set(PARAMS_NAME_ENUM.DEATH, getInitParamsTrigger())
+    this.params.set(PARAMS_NAME_ENUM.AIRDEATH, getInitParamsTrigger())
     this.params.set(PARAMS_NAME_ENUM.ATTACK, getInitParamsTrigger())
   }
 
@@ -56,6 +56,7 @@ export class PlayerStateMachine extends StateMachine {
     this.stateMachine.set(PARAMS_NAME_ENUM.BLOCKLEFT, new BlockLeftSubStateMachine(this))
     this.stateMachine.set(PARAMS_NAME_ENUM.BLOCKRIGHT, new BlockRightSubStateMachine(this))
     this.stateMachine.set(PARAMS_NAME_ENUM.DEATH, new DeadSubStateMachine(this))
+    this.stateMachine.set(PARAMS_NAME_ENUM.AIRDEATH, new AirDeathSubStateMachine(this))
     this.stateMachine.set(PARAMS_NAME_ENUM.ATTACK, new AttackSubStateMachine(this))
   }
 
@@ -82,6 +83,7 @@ export class PlayerStateMachine extends StateMachine {
       case  this.stateMachine.get(PARAMS_NAME_ENUM.BLOCKLEFT):
       case  this.stateMachine.get(PARAMS_NAME_ENUM.BLOCKRIGHT):
       case  this.stateMachine.get(PARAMS_NAME_ENUM.DEATH):
+      case  this.stateMachine.get(PARAMS_NAME_ENUM.AIRDEATH):
       case  this.stateMachine.get(PARAMS_NAME_ENUM.ATTACK):
         if(this.params.get(PARAMS_NAME_ENUM.TURNLEFT).value){   //左转
           this.currentState = this.stateMachine.get(PARAMS_NAME_ENUM.TURNLEFT)
@@ -112,6 +114,9 @@ export class PlayerStateMachine extends StateMachine {
         }
         else if(this.params.get(PARAMS_NAME_ENUM.DEATH).value){
           this.currentState = this.stateMachine.get(PARAMS_NAME_ENUM.DEATH)
+        }
+        else if(this.params.get(PARAMS_NAME_ENUM.AIRDEATH).value){
+          this.currentState = this.stateMachine.get(PARAMS_NAME_ENUM.AIRDEATH)
         }
         else if(this.params.get(PARAMS_NAME_ENUM.ATTACK).value){
           this.currentState = this.stateMachine.get(PARAMS_NAME_ENUM.ATTACK)
